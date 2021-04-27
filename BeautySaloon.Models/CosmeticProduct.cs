@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BeautySaloon.Models
 {
-    abstract public class CosmeticProduct
+    public class CosmeticProduct
     {
         public int id { get; set; }
         public string name { get; set; }

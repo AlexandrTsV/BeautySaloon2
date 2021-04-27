@@ -14,7 +14,7 @@ namespace BeautySaloon.Models
         }
         virtual public DateTime GetExpirationTime()
         {
-            return productionTime + new TimeSpan(0, 0, 0, 1);
+            return productionTime + new TimeSpan(0, 0, 0, 5);
         }
         public override CosmeticProduct Construct()
         {
