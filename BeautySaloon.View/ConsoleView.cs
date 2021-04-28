@@ -36,9 +36,10 @@ namespace BeautySaloon.View
             Print();
 
             string line;
-            line = Console.ReadLine();
 
+            line = Console.ReadLine();
             toPrint = controller.Input(line);
+
             Update();
         }
     }

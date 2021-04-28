@@ -36,7 +36,6 @@ namespace BeautySaloon.BusinessLogic
         public List<CosmeticProduct> ExecuteOrder(List<CosmeticProduct> products, int id)
         {
             List<CosmeticProduct> result = new List<CosmeticProduct>();
-            Mappers.CosmeticProductMapper tmpMapper = new Mappers.CosmeticProductMapper();
             Interfaces.ICosmeticProductService cosmeticProductService = new CosmeticProductService();
 
             foreach (var product in products)
