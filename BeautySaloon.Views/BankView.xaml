@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="BeautySaloon.Views.BankView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BeautySaloon.Views"
+        mc:Ignorable="d"
+        d:DesignHeight="450" d:DesignWidth="300">
+    <Grid d:DataContext="{d:DesignInstance {x:Type local:MainViewVM}}">
+        <DockPanel Grid.Row="0" Grid.Column="1">
+            <Label DockPanel.Dock="Top" Content="Bank"/>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+                <Label>
+                    Quantity:
+                </Label>
+                <TextBox Width="30" SelectedText="10" Text="{Binding OrderQuantity}"/>
+                <Button Command="{Binding OrderProduct}" Margin="5">
+                    Order
+                </Button>
+            </StackPanel>
+            <ListBox ItemsSource="{Binding Bank}" SelectedIndex="0" SelectedItem="{Binding SelectedForOrder}"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

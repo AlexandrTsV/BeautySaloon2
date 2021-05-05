@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
+/*
 namespace BeautySaloon.View
 {
     public class ConsoleView : Interfaces.IView
@@ -44,3 +45,4 @@ namespace BeautySaloon.View
         }
     }
 }
+*/

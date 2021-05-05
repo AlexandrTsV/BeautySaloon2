@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BeautySaloon.BusinessLogic
 {
+    /*
     public class BankService : Interfaces.IBankService
     {
         DataAccess.Interfaces.IBankRepository repository { get; set; }
@@ -76,5 +77,5 @@ namespace BeautySaloon.BusinessLogic
         {
             repository.Update(mapper.ModelToEntity(bank));
         }
-    }
+    } */
 }

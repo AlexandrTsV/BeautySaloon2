@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BeautySaloon.Models
 {
-    class Shampoo : CosmeticProductLongTerm
+    public class Shampoo : CosmeticProductLongTerm
     {
         /* public Shampoo(float price, int quantity) : base()
         {

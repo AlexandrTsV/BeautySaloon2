@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="BeautySaloon.Views.SaloonView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BeautySaloon.Views"
+        mc:Ignorable="d"
+        d:DesignHeight="450" d:DesignWidth="800">
+    <Grid d:DataContext="{d:DesignInstance {x:Type local:MainViewVM}}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <DockPanel>
+            <Label DockPanel.Dock="Top" Content="Storage"/>
+            <!-- <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"> -->
+            <ListBox ItemsSource="{Binding Saloon}"/>
+        </DockPanel>
+
+        <DockPanel Grid.Row="0" Grid.Column="1">
+            <Label DockPanel.Dock="Top" Content="To order"/>
+
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+                <Button Command="{Binding Refresh}" Margin="5">Refresh</Button>
+                <Button Command="{Binding OrderNeeded}" Margin="5">Order needed</Button>
+            </StackPanel>
+            
+            <ListBox ItemsSource="{Binding Needed}"/>
+        </DockPanel>
+    </Grid>
+</UserControl>

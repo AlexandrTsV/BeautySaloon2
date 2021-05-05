@@ -5,6 +5,7 @@ using System.Text;
 
 namespace BeautySaloon.BusinessLogic
 {
+    /*
     public class SaloonService : Interfaces.ISaloonService
     {
         DataAccess.Interfaces.ISaloonRepository repository { get; set; }
@@ -87,5 +88,5 @@ namespace BeautySaloon.BusinessLogic
             }
             return products;
         }
-    }
+    } */
 }

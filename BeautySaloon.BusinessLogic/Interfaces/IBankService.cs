@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace BeautySaloon.BusinessLogic.Interfaces
 {
+    /*
     public interface IBankService
     {
         public void Create(Models.Bank bank);
@@ -13,5 +14,5 @@ namespace BeautySaloon.BusinessLogic.Interfaces
         public Models.Bank GetById(int id);
         public List<Models.CosmeticProduct> ExecuteOrder(List<Models.CosmeticProduct> products, int id);
         public void AddProduct(Models.CosmeticProduct product, int id);
-    }
+    } */
 }

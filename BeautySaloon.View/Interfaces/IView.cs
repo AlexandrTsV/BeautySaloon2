@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
+/*
 namespace BeautySaloon.View.Interfaces
 {
     public interface IView
@@ -9,3 +9,4 @@ namespace BeautySaloon.View.Interfaces
         public void Update();
     }
 }
+*/

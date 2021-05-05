@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace BeautySaloon.BusinessLogic.Interfaces
 {
+    /*
     public interface ISaloonService
     {
         public void Create(Models.Saloon saloon);
@@ -14,5 +15,5 @@ namespace BeautySaloon.BusinessLogic.Interfaces
         public List<Models.CosmeticProduct> FormOrder(int id);
         public List<Models.CosmeticProduct> GetAllNeededProducts(int id);
         public void AddProduct(Models.CosmeticProduct product, int id);
-    }
+    } */
 }

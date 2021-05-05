@@ -5,6 +5,7 @@ using System.Text;
 
 namespace BeautySaloon.BusinessLogic
 {
+    /*
     public class CosmeticProductService : Interfaces.ICosmeticProductService
     {
         DataAccess.Interfaces.ICosmeticProductRepository repository { get; set; }
@@ -21,7 +22,7 @@ namespace BeautySaloon.BusinessLogic
             repository.Add(mapper.ModelToEntity(product));
         }
 
-        public void Delete(int id)
+        public void Delete(CosmeticProduct product)
         {
             repository.Delete(id);
         }
@@ -59,5 +60,5 @@ namespace BeautySaloon.BusinessLogic
         {
             repository.Update(mapper.ModelToEntity(product));
         }
-    }
+    } */
 }
