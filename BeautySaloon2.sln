@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautySaloon.Entities", "Be
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautySaloon.BusinessLogic", "BeautySaloon.BusinessLogic\BeautySaloon.BusinessLogic.csproj", "{DFAC184F-3696-4858-8B0F-AA20F699B9B2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautySaloon.EntryPoint", "..\BeautySaloon.CLI\BeautySaloon.CLI\BeautySaloon.EntryPoint.csproj", "{46BA38AC-0DF9-455E-AF03-1E363D9135B8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautySaloon.Mappers", "BeautySaloon.Mappers\BeautySaloon.Mappers.csproj", "{3ED52AC4-E40C-4737-8E15-8652856EB658}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeautySaloon.Commands", "BeautySaloon.Controllers\BeautySaloon.Commands.csproj", "{159AAB8D-0C25-49D1-A339-6D650C91F252}"
@@ -41,10 +39,6 @@ Global
 		{DFAC184F-3696-4858-8B0F-AA20F699B9B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFAC184F-3696-4858-8B0F-AA20F699B9B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DFAC184F-3696-4858-8B0F-AA20F699B9B2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{46BA38AC-0DF9-455E-AF03-1E363D9135B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{46BA38AC-0DF9-455E-AF03-1E363D9135B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{46BA38AC-0DF9-455E-AF03-1E363D9135B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{46BA38AC-0DF9-455E-AF03-1E363D9135B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3ED52AC4-E40C-4737-8E15-8652856EB658}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3ED52AC4-E40C-4737-8E15-8652856EB658}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3ED52AC4-E40C-4737-8E15-8652856EB658}.Release|Any CPU.ActiveCfg = Release|Any CPU

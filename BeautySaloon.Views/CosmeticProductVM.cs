@@ -7,25 +7,24 @@ using System.Text;
 
 namespace BeautySaloon.Views
 {
-    public class CosmeticProductVM : INotifyPropertyChanged
+    public class CosmeticProductVM : Models.CosmeticProduct, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public Models.CosmeticProduct cosmeticProduct;
-
-        public string Name { get { return cosmeticProduct.name; } }
-        public double Price { get { return cosmeticProduct.price; } }
-        public string Type { get { return cosmeticProduct.type; } }
-        public int Quantity { get { return cosmeticProduct.quantity;  } }
-
         public CosmeticProductVM()
         {
-            cosmeticProduct = new Models.CosmeticProduct() { name = "Test1", price = 5, type = "TestType" };
+            name = "Test1";
+            price = 5;
+            type = "TestType";
         }
 
         public CosmeticProductVM(Models.CosmeticProduct cosmeticProduct)
         {
-            this.cosmeticProduct = cosmeticProduct;
+            id = cosmeticProduct.id;
+            name = cosmeticProduct.name;
+            price = cosmeticProduct.price;
+            type = cosmeticProduct.type;
+            quantity = cosmeticProduct.quantity;
         }
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

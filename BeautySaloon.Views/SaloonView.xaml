@@ -14,7 +14,6 @@
 
         <DockPanel>
             <Label DockPanel.Dock="Top" Content="Storage"/>
-            <!-- <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom"> -->
             <ListBox ItemsSource="{Binding Saloon}"/>
         </DockPanel>
 
