@@ -6,17 +6,20 @@ namespace BeautySaloon.Mappers
 {
     public class CosmeticProductMapper : Interfaces.IMapperToEntity<Entities.CosmeticProduct, Models.CosmeticProduct>, Interfaces.IMapperToModel<Entities.CosmeticProduct, Models.CosmeticProduct>
     {
+        public CosmeticProductMapper()
+        {
+        }
         public Entities.CosmeticProduct ModelToEntity(Models.CosmeticProduct model)
         {
             return new Entities.CosmeticProduct()
             { 
-                id = model.id, 
-                name = model.name, 
-                price = model.price, 
-                quantity = model.quantity, 
-                type = model.type, 
-                deliveryTime = model.deliveryTime, 
-                // productionTime = model.productionTime 
+                ID = model.id, 
+                Name = model.Name, 
+                Price = model.Price, 
+                Quantity = model.Quantity, 
+                ProductTypeID = (int)model.Type + 1,
+                DeliveryTime = model.DeliveryTime, 
+                ProductionTime = model.ProductionTime
             };
                 
             
@@ -25,22 +28,30 @@ namespace BeautySaloon.Mappers
         public Models.CosmeticProduct EntityToModel(Entities.CosmeticProduct entity)
         {
             Models.CosmeticProduct product = new Models.CosmeticProduct();
-
-            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            
+            if (entity.Type.StorageTime != null)
             {
-                Type type = asm.GetType("BeautySaloon.Models." + entity.type);
-                if (type != null) {
-                    product = (BeautySaloon.Models.CosmeticProduct)Activator.CreateInstance(type);
+                if (entity.Type.StorageTime >= TimeSpan.Parse("10:00:00"))
+                {
+                    product = new Models.CosmeticProductLongTerm();
+                    ((Models.CosmeticProductLongTerm)product).StorageTime = (TimeSpan)entity.Type.StorageTime;
+                }
+                else
+                {
+                    product = new Models.CosmeticProductExpiration();
+                    ((Models.CosmeticProductExpiration)product).StorageTime = (TimeSpan)entity.Type.StorageTime;
                 }
             }
-            product.id = entity.id;
-            product.name = entity.name;
-            product.price = entity.price;
-            product.quantity = entity.quantity;
-            product.type = entity.type;
-            product.deliveryTime = entity.deliveryTime;
-            product.productionTime = (System.DateTime)entity.productionTime;
-            product.id = entity.id;
+            
+            product.id = entity.ID;
+            product.Name = entity.Name;
+            product.Price = entity.Price;
+            product.Quantity = entity.Quantity;
+            product.Type = (Models.ProductTypes)Enum.Parse(typeof(Models.ProductTypes), entity.Type.Name);
+            product.DeliveryTime = entity.DeliveryTime;
+            product.ProductionTime = (System.DateTime)entity.ProductionTime;
+            product.id = entity.ID;
+            product.MinimalQuantity = entity.Type.MinimalQuantity;
             return product;
         }
     }

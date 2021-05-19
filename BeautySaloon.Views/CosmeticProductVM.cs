@@ -13,18 +13,18 @@ namespace BeautySaloon.Views
 
         public CosmeticProductVM()
         {
-            name = "Test1";
-            price = 5;
-            type = "TestType";
+            Name = "Test1";
+            Price = 5;
+            Type = 0;
         }
 
         public CosmeticProductVM(Models.CosmeticProduct cosmeticProduct)
         {
             id = cosmeticProduct.id;
-            name = cosmeticProduct.name;
-            price = cosmeticProduct.price;
-            type = cosmeticProduct.type;
-            quantity = cosmeticProduct.quantity;
+            Name = cosmeticProduct.Name;
+            Price = cosmeticProduct.Price;
+            Type = cosmeticProduct.Type;
+            Quantity = cosmeticProduct.Quantity;
         }
         public void OnPropertyChanged([CallerMemberName] string prop = "")
         {

@@ -52,7 +52,7 @@ namespace BeautySaloon.Views
 
             OrderProduct = new DelegateCommand(a =>
             {
-                SelectedForOrder.quantity = 5;
+                SelectedForOrder.Quantity = 5;
                 commands.OrderProduct(SelectedForOrder, OrderQuantity);
                 Update();
             });

@@ -6,9 +6,11 @@ namespace BeautySaloon.Entities
 {
     public class BankProduct
     {
-        public int id { get; set; }
-        public int bankId { get; set; }
-        public int productId { get; set; }
+        public int ID { get; set; }
+        public int BankID { get; set; }
+        public int CosmeticProductID { get; set; }
+        public virtual Bank Bank { get; set; }
+        public virtual CosmeticProduct CosmeticProduct { get; set; }
 
     }
 }

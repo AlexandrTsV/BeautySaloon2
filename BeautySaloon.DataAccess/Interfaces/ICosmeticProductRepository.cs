@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BeautySaloon.DataAccess.Interfaces
 {
-    public interface ICosmeticProductRepository : IRepository<Entities.CosmeticProduct>
+    public interface ICosmeticProductRepository : IRepository<int, Entities.CosmeticProduct>
     {
     }
 }

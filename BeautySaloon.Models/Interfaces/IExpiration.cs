@@ -6,7 +6,6 @@ namespace BeautySaloon.Models
 {
     public interface IExpiration
     {
-        public DateTime GetExpirationTime();
-        public bool IsExpired();
+        public TimeSpan StorageTime { get; set; }
     }
 }

@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace BeautySaloon.DataAccess.Interfaces
 {
-    public interface IRepository<Entity>
+    public interface IRepository<ID, Entity>
     {
         public void Add(Entity entity);
-        public Entity GetById(int id);
-        public void Delete(int id);
+        public Entity GetById(ID id);
+        public void Delete(Entity entity);
         public void Update(Entity entity);
         public List<Entity> GetAll();
     }

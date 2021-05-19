@@ -6,8 +6,10 @@ namespace BeautySaloon.Entities
 {
     public class SaloonProduct
     {
-        public int id { get; set; }
-        public int saloonId { get; set; }
-        public int productId { get; set; }
+        public int ID { get; set; }
+        public int SaloonID { get; set; }
+        public int CosmeticProductID { get; set; }
+        public virtual Saloon Saloon { get; set; }
+        public virtual CosmeticProduct CosmeticProduct { get; set; }
     }
 }

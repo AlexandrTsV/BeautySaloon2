@@ -5,30 +5,29 @@ using System.Text;
 
 namespace BeautySaloon.BusinessLogic
 {
-    /*
     public class SaloonService : Interfaces.ISaloonService
     {
         DataAccess.Interfaces.ISaloonRepository repository { get; set; }
         Mappers.SaloonMapper mapper { get; set; }
 
-        public SaloonService()
+        public SaloonService(DataAccess.Interfaces.ISaloonRepository rep)
         {
-            repository = new DataAccess.SaloonRepository();
+            repository = rep;
             mapper = new Mappers.SaloonMapper();
         }
-        public void AddProduct(CosmeticProduct product, int id)
+        public void AddProduct(CosmeticProduct product, Saloon saloon)
         {
             Mappers.CosmeticProductMapper tmpMapper = new Mappers.CosmeticProductMapper();
-            repository.AddProduct(tmpMapper.ModelToEntity(product), id);
+            repository.AddProduct(tmpMapper.ModelToEntity(product), mapper.ModelToEntity(saloon));
         }
         public void Create(Saloon saloon)
         {
             repository.Add(mapper.ModelToEntity(saloon));
         }
 
-        public void Delete(int id)
+        public void Delete(Saloon saloon)
         {
-            repository.Delete(id);
+            repository.Delete(mapper.ModelToEntity(saloon));
         }
 
         public List<Saloon> GetSaloons()
@@ -52,41 +51,51 @@ namespace BeautySaloon.BusinessLogic
         }
 
 
-        public List<CosmeticProduct> GetAllNeededProducts(int id)
+        public List<CosmeticProduct> GetAllNeededProducts(Saloon saloon)
         {
 
             List<CosmeticProduct> products = new List<CosmeticProduct>();
-            foreach (var product in GetById(id).storage)
+            foreach (var product in saloon.storage)
             {
-                if (product.IsNeeded() > 0)
+                if (product.Quantity < product.MinimalQuantity)
                 {
                     products.Add(product);
                 }
-            }
-            return products;
-        }
-
-        public List<CosmeticProduct> FormOrder(int id)
-        {
-
-            List<CosmeticProduct> products = new List<CosmeticProduct>();
-            foreach (var product in GetById(id).storage)
-            {
-                if (product.IsNeeded() > 0)
+                else if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
                 {
-                    var tmpProduct = product.Construct();
-                    tmpProduct.quantity = product.IsNeeded();
-                    if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
+                    if (product.ProductionTime + ((IExpiration)product).StorageTime < DateTime.Now)
                     {
-                        if (((IExpiration)product).IsExpired())
-                        {
-                            (new CosmeticProductService()).Delete(product.id);
-                        }
+                        products.Add(product);
                     }
-                    products.Add(tmpProduct);
                 }
             }
             return products;
         }
-    } */
+
+        public List<CosmeticProduct> FormOrder(Saloon saloon)
+        {
+            List<CosmeticProduct> products = new List<CosmeticProduct>();
+            foreach (var product in saloon.storage)
+            {
+                if (product.Quantity < product.MinimalQuantity)
+                {
+                    var tmpProduct = new CosmeticProduct(product);
+                    tmpProduct.Quantity = product.MinimalQuantity - product.Quantity;
+                    products.Add(tmpProduct);
+                }
+                else if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
+                {
+                    if (product.ProductionTime + ((IExpiration)product).StorageTime < DateTime.Now)
+                    {
+                        var tmpProduct = new CosmeticProduct(product);
+                        tmpProduct.Quantity = product.MinimalQuantity;
+                        product.Quantity = 0;
+                        repository.Update(mapper.ModelToEntity(saloon));
+                        products.Add(tmpProduct);
+                    }
+                }
+            }
+            return products;
+        }
+    }
 }

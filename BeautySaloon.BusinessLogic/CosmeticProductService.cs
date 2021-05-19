@@ -5,15 +5,14 @@ using System.Text;
 
 namespace BeautySaloon.BusinessLogic
 {
-    /*
     public class CosmeticProductService : Interfaces.ICosmeticProductService
     {
         DataAccess.Interfaces.ICosmeticProductRepository repository { get; set; }
         Mappers.CosmeticProductMapper mapper { get; set; }
 
-        public CosmeticProductService()
+        public CosmeticProductService(DataAccess.Interfaces.ICosmeticProductRepository rep)
         {
-            repository = new DataAccess.CosmeticProductRepository();
+            repository = rep;
             mapper = new Mappers.CosmeticProductMapper();
         }
 
@@ -24,26 +23,36 @@ namespace BeautySaloon.BusinessLogic
 
         public void Delete(CosmeticProduct product)
         {
-            repository.Delete(id);
+            repository.Delete(mapper.ModelToEntity(product));
         }
+        /* public List<CosmeticProduct> DeleteExpired(List<CosmeticProduct> products)
+        {
+            foreach (CosmeticProduct product in products)
+            {
+                if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
+                {
+                    if (product.ProductionTime + ((IExpiration)product).StorageTime < DateTime.Now)
+                    {
+                        Delete(product);
+                    }
+                }
+            }
+            return products;
+        } */
 
         public CosmeticProduct GetById(int id)
         {
             return mapper.EntityToModel(repository.GetById(id));
         }
         
-        public List<CosmeticProduct> GetByBankId(int id)
+        public List<CosmeticProduct> GetByBank(Bank bank)
         {
-            Interfaces.IBankService bankService = new BankService();
-
-            return bankService.GetById(id).storage;
+            return bank.storage;
         }
 
-        public List<CosmeticProduct> GetBySaloonId(int id)
+        public List<CosmeticProduct> GetBySaloon(Saloon saloon)
         {
-            Interfaces.ISaloonService saloonService = new SaloonService();
-
-            return saloonService.GetById(id).storage;
+            return saloon.storage;
         }
 
         public List<CosmeticProduct> GetCosmeticProducts()
@@ -60,5 +69,5 @@ namespace BeautySaloon.BusinessLogic
         {
             repository.Update(mapper.ModelToEntity(product));
         }
-    } */
+    }
 }
