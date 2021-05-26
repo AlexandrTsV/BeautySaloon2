@@ -18,9 +18,16 @@ namespace BeautySaloon.Mappers
 
             Interfaces.IMapperToEntity<Entities.CosmeticProduct, Models.CosmeticProduct> productMapper = new CosmeticProductMapper();
 
+            var uof = new DataAccess.UnitOfWork
+            {
+                db = new DataAccess.BeautySaloonDbContext()
+            };
+            var dc = new DataAccess.CosmeticProductRepository(uof);
+            uof.CosmeticProducts = dc;
+
             foreach (var product in model.storage)
             {
-                Entities.SaloonProduct tmp = new Entities.SaloonProduct { CosmeticProduct = productMapper.ModelToEntity(product), CosmeticProductID = productMapper.ModelToEntity(product).ID, Saloon = saloon, SaloonID = saloon.ID };
+                Entities.SaloonProduct tmp = new Entities.SaloonProduct { CosmeticProduct = dc.GetById(productMapper.ModelToEntity(product).ID), CosmeticProductID = productMapper.ModelToEntity(product).ID, Saloon = saloon, SaloonID = saloon.ID, Quantity = product.Quantity };
                 saloon.Storage.Add(tmp);
             }
 
@@ -37,7 +44,9 @@ namespace BeautySaloon.Mappers
 
             foreach (var product in entity.Storage)
             {
-                saloon.storage.Add(productMapper.EntityToModel(product.CosmeticProduct));
+                var p = productMapper.EntityToModel(product.CosmeticProduct);
+                p.Quantity = product.Quantity;
+                saloon.storage.Add(p);
             }
             return saloon;
         }

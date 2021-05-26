@@ -19,7 +19,14 @@ namespace BeautySaloon.DataAccess
             {
                 if (product.Name == entity.Name)
                 {
-                    entity.Quantity += product.Quantity;
+                    foreach (var relation in unitOfWork.db.SaloonProducts)
+                    {
+                        if (relation.CosmeticProduct.Name == product.Name && relation.SaloonID == entity.ID)
+                        {
+                            // TODO
+                            //relation.Quantity = product.Quantity;
+                        }
+                    }
                     entity.ID = product.ID;
                     unitOfWork.CosmeticProducts.Update(entity);
 
@@ -79,9 +86,29 @@ namespace BeautySaloon.DataAccess
 
             foreach (var product in entity.Storage)
             {
-                unitOfWork.CosmeticProducts.Update(product.CosmeticProduct);
+                int status = 0;
+                foreach (var relation in unitOfWork.db.SaloonProducts)
+                {
+                    if (relation.CosmeticProduct.Name == product.CosmeticProduct.Name && relation.SaloonID == entity.ID)
+                    {
+                        relation.Quantity = product.Quantity;
+                        status = 1;
+                    }
+                }
+                if (status == 0)
+                {
+                    unitOfWork.db.SaloonProducts.Add(new Entities.SaloonProduct { 
+                        CosmeticProductID = product.CosmeticProductID,
+                        SaloonID = product.SaloonID,
+                        Quantity = product.Quantity
+                    });
+                    unitOfWork.Save();
+                }
+                else
+                {
+                    unitOfWork.CosmeticProducts.Update(product.CosmeticProduct);
+                }
             }
-            unitOfWork.Save();
         }
     }
 }

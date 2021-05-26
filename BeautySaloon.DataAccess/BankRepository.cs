@@ -13,12 +13,31 @@ namespace BeautySaloon.DataAccess
         {
             unitOfWork = uow;
         }
-        public void AddProduct(CosmeticProduct entity, int id)
+        public void AddProduct(CosmeticProduct entity, Bank bank)
         {
-            throw new NotImplementedException();
+            int status = 0;
+            foreach (var product in GetProducts(bank))
+            {
+                if (product.Name == entity.Name)
+                {
+                    entity.ID = product.ID;
+                    unitOfWork.CosmeticProducts.Update(entity);
+
+                    status = 1;
+                }
+            }
+
+            if (status == 0)
+            {
+                unitOfWork.CosmeticProducts.Add(entity);
+                BankProduct bankProduct = new BankProduct() { CosmeticProductID = entity.ID, BankID = bank.ID, Quantity = 1000 };
+                unitOfWork.db.BankProducts.Add(bankProduct);
+            }
+
+            unitOfWork.Save();
         }
 
-        public List<CosmeticProduct> GetProducts(int id)
+        public List<CosmeticProduct> GetProducts(Bank bank)
         {
             List<CosmeticProduct> result = new List<CosmeticProduct>();
 
@@ -26,7 +45,7 @@ namespace BeautySaloon.DataAccess
 
             foreach (var entry in unitOfWork.db.BankProducts)
             {
-                if (entry.BankID == id)
+                if (entry.BankID == bank.ID)
                 {
                     toCompare.Add(entry.CosmeticProductID);
                 }
@@ -74,6 +93,13 @@ namespace BeautySaloon.DataAccess
 
             foreach (var product in entity.Storage)
             {
+                foreach (var relation in unitOfWork.db.BankProducts)
+                {
+                    if (relation.CosmeticProduct.Name == product.CosmeticProduct.Name && relation.BankID == entity.ID)
+                    {
+                        relation.Quantity = product.Quantity;
+                    }
+                }
                 unitOfWork.CosmeticProducts.Update(product.CosmeticProduct);
             }
             unitOfWork.Save();

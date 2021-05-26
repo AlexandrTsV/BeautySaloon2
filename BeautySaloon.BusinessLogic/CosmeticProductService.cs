@@ -1,6 +1,7 @@
 ﻿using BeautySaloon.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BeautySaloon.BusinessLogic
@@ -68,6 +69,14 @@ namespace BeautySaloon.BusinessLogic
         public void Update(CosmeticProduct product)
         {
             repository.Update(mapper.ModelToEntity(product));
+        }
+        public List<Models.Services> GetServices()
+        {
+            return Enum.GetValues(typeof(Models.Services)).Cast<Models.Services>().ToList();
+        }
+        public List<Models.ProductTypes> GetTypes()
+        {
+            return Enum.GetValues(typeof(Models.ProductTypes)).Cast<Models.ProductTypes>().ToList();
         }
     }
 }

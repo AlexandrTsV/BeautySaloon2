@@ -18,7 +18,20 @@ namespace BeautySaloon.BusinessLogic
         public void AddProduct(CosmeticProduct product, Saloon saloon)
         {
             Mappers.CosmeticProductMapper tmpMapper = new Mappers.CosmeticProductMapper();
-            repository.AddProduct(tmpMapper.ModelToEntity(product), mapper.ModelToEntity(saloon));
+            int status = 0;
+            foreach (var inner in saloon.storage) {
+                if (inner.Name == product.Name)
+                {
+                    inner.Quantity += product.Quantity;
+                    status = 1;
+                }
+            }
+            if (status == 0)
+            {
+                saloon.storage.Add(product);
+            }
+            
+            repository.Update(mapper.ModelToEntity(saloon));
         }
         public void Create(Saloon saloon)
         {
@@ -72,6 +85,24 @@ namespace BeautySaloon.BusinessLogic
             return products;
         }
 
+        public List<Models.CosmeticProduct> GetProductsBySaloon(Models.Saloon saloon)
+        {
+            repository.Update(mapper.ModelToEntity(saloon));
+            return mapper.EntityToModel(repository.GetById(saloon.id)).storage;
+        }
+        public List<Models.CosmeticProduct> GetProductsByService(Models.Saloon saloon, Models.Services service)
+        {
+            List<CosmeticProduct> products = new List<CosmeticProduct>();
+            foreach (var product in saloon.storage)
+            {
+                if (product.ServiceType == service)
+                {
+                    products.Add(product);
+                }
+            }
+            return products;
+        }
+
         public List<CosmeticProduct> FormOrder(Saloon saloon)
         {
             List<CosmeticProduct> products = new List<CosmeticProduct>();
@@ -96,6 +127,25 @@ namespace BeautySaloon.BusinessLogic
                 }
             }
             return products;
+        }
+
+        public void UpdateStorage(CosmeticProduct product, Saloon saloon)
+        {
+            int status = 0;
+            foreach (var inner in saloon.storage)
+            {
+                if (inner.Name == product.Name)
+                {
+                    inner.Type = product.Type;
+                    status = 1;
+                }
+            }
+            if (status == 0)
+            {
+                saloon.storage.Add(product);
+            }
+
+            repository.Update(mapper.ModelToEntity(saloon));
         }
     }
 }

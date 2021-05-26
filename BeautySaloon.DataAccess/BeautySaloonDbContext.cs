@@ -11,6 +11,7 @@ namespace BeautySaloon.DataAccess
         public DbSet<Entities.BankProduct> BankProducts { get; set; }
         public DbSet<Entities.SaloonProduct> SaloonProducts { get; set; }
         public DbSet<Entities.ProductType> ProductTypes { get; set; }
+        public DbSet<Entities.Service> Services { get; set; }
 
         public BeautySaloonDbContext() : base("BeautySaloon")
         {

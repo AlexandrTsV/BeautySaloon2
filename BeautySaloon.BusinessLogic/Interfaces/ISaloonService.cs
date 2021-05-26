@@ -13,6 +13,9 @@ namespace BeautySaloon.BusinessLogic.Interfaces
         public Models.Saloon GetById(int id);
         public List<Models.CosmeticProduct> FormOrder(Models.Saloon saloon);
         public List<Models.CosmeticProduct> GetAllNeededProducts(Models.Saloon saloon);
+        public List<Models.CosmeticProduct> GetProductsByService(Models.Saloon saloon, Models.Services service);
         public void AddProduct(Models.CosmeticProduct product, Models.Saloon saloon);
+        public List<Models.CosmeticProduct> GetProductsBySaloon(Models.Saloon saloon);
+        public void UpdateStorage(Models.CosmeticProduct product, Models.Saloon saloon);
     }
 }

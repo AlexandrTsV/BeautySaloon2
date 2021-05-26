@@ -20,7 +20,7 @@ namespace BeautySaloon.Mappers
 
             foreach (var product in model.storage)
             {
-                Entities.BankProduct tmp = new Entities.BankProduct { CosmeticProduct = productMapper.ModelToEntity(product), CosmeticProductID = productMapper.ModelToEntity(product).ID, Bank = bank, BankID = bank.ID };
+                Entities.BankProduct tmp = new Entities.BankProduct { CosmeticProduct = productMapper.ModelToEntity(product), CosmeticProductID = productMapper.ModelToEntity(product).ID, Bank = bank, BankID = bank.ID, Quantity = product.Quantity };
                 bank.Storage.Add(tmp);
             }
 
@@ -37,7 +37,9 @@ namespace BeautySaloon.Mappers
 
             foreach (var product in entity.Storage)
             {
-                bank.storage.Add(productMapper.EntityToModel(product.CosmeticProduct));
+                var p = productMapper.EntityToModel(product.CosmeticProduct);
+                p.Quantity = product.Quantity;
+                bank.storage.Add(p);
             }
             return bank;
         }

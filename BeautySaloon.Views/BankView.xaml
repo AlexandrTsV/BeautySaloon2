@@ -14,9 +14,8 @@
                     Quantity:
                 </Label>
                 <TextBox Width="30" SelectedText="10" Text="{Binding OrderQuantity}"/>
-                <Button Command="{Binding OrderProduct}" Margin="5">
-                    Order
-                </Button>
+                <Button Content="Order"  Command="{Binding OrderProduct}" Margin="5"/>
+                <Button Content="Add product"  Command="{Binding AddProduct}" Margin="5"/>
             </StackPanel>
             <ListBox ItemsSource="{Binding Bank}" SelectedIndex="0" SelectedItem="{Binding SelectedForOrder}"/>
         </DockPanel>

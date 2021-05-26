@@ -20,7 +20,7 @@ namespace BeautySaloon.BusinessLogic
         public void AddProduct(CosmeticProduct product, Bank bank)
         {
             Mappers.CosmeticProductMapper tmpMapper = new Mappers.CosmeticProductMapper();
-            repository.AddProduct(tmpMapper.ModelToEntity(product), bank.id);
+            repository.AddProduct(tmpMapper.ModelToEntity(product), mapper.ModelToEntity(bank));
         }
 
         public void Create(Bank bank)

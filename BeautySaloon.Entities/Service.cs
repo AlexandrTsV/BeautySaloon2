@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BeautySaloon.Entities
 {
-    public class ProductType
+    public class Service
     {
         public int ID { get; set; }
         public string Name { get; set; }

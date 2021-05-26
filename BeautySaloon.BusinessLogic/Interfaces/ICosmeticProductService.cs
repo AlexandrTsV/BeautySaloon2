@@ -11,8 +11,9 @@ namespace BeautySaloon.BusinessLogic.Interfaces
         public void Update(Models.CosmeticProduct product);
         public void Delete(Models.CosmeticProduct product);
         public List<Models.CosmeticProduct> GetByBank(Models.Bank bank);
-        public List<Models.CosmeticProduct> GetBySaloon(Models.Saloon saloon);
         public List<Models.CosmeticProduct> GetCosmeticProducts();
         public Models.CosmeticProduct GetById(int id);
+        public List<Models.Services> GetServices();
+        public List<Models.ProductTypes> GetTypes();
     }
 }

@@ -6,11 +6,17 @@ namespace BeautySaloon.Models
 {
     public enum ProductTypes
     {
-        Shampoo,
-        Gel,
-        Balm,
-        Pomade,
-        Cream
+        CosmeticProduct = 1,
+        CosmeticProductExpiration,
+        CosmeticProductLongTerm
+    }
+
+    public enum Services
+    {
+        Face = 1,
+        Body,
+        Hair,
+        Lips
     }
 
     public class CosmeticProduct
@@ -22,6 +28,7 @@ namespace BeautySaloon.Models
         public string Name { get; set; }
         public double Price { get; set; }
         public ProductTypes Type { get; set; }
+        public Services ServiceType { get; set; }
         public int Quantity { get; set; }
 
         public CosmeticProduct()
@@ -36,6 +43,7 @@ namespace BeautySaloon.Models
             Name              = cosmeticProduct.Name           ;
             Price             = cosmeticProduct.Price          ;
             Type              = cosmeticProduct.Type           ;
+            ServiceType       = cosmeticProduct.ServiceType    ;
             Quantity          = cosmeticProduct.Quantity       ;
         }
     }

@@ -61,13 +61,17 @@ namespace BeautySaloon.DataAccess
 
         public void Update(CosmeticProduct entity)
         {
-            var tmp = unitOfWork.db.CosmeticProducts.Find(entity.ID);
-            tmp.ID = entity.ID;
-            tmp.Name = entity.Name;
-            tmp.Price = entity.Price;
-            tmp.ProductionTime = entity.ProductionTime;
-            tmp.Quantity = entity.Quantity;
-            tmp.ProductTypeID = entity.ProductTypeID;
+            foreach (var tmp in unitOfWork.db.CosmeticProducts) {
+                if (tmp.ID == entity.ID)
+                {
+                    tmp.Name = entity.Name;
+                    tmp.Price = entity.Price;
+                    tmp.ProductionTime = entity.ProductionTime;
+                    tmp.MinimalQuantity = entity.MinimalQuantity;
+                    tmp.ProductTypeID = entity.ProductTypeID;
+                    tmp.StorageTime = entity.StorageTime;
+                }
+            }
 
             unitOfWork.Save();
         }
