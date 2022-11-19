@@ -5,36 +5,55 @@ using System.Text;
 
 namespace BeautySaloon.DataAccess
 {
-    public class BankRepository : Interfaces.IRepository<Bank>, Interfaces.IBankRepository
+    public class BankRepository : Interfaces.IBankRepository
     {
-        public BeautySaloonDbContext context { get; set; }
-        
-        public BankRepository()
+        public UnitOfWork unitOfWork { get; set; }
+
+        public BankRepository(UnitOfWork uow)
         {
-            context = new BeautySaloonDbContext();
+            unitOfWork = uow;
         }
-        public void AddProduct(CosmeticProduct entity, int id)
+        public void AddProduct(CosmeticProduct entity, Bank bank)
         {
-            throw new NotImplementedException();
+            int status = 0;
+            foreach (var product in GetProducts(bank))
+            {
+                if (product.Name == entity.Name)
+                {
+                    entity.ID = product.ID;
+                    unitOfWork.CosmeticProducts.Update(entity);
+
+                    status = 1;
+                }
+            }
+
+            if (status == 0)
+            {
+                unitOfWork.CosmeticProducts.Add(entity);
+                BankProduct bankProduct = new BankProduct() { CosmeticProductID = entity.ID, BankID = bank.ID, Quantity = 1000 };
+                unitOfWork.db.BankProducts.Add(bankProduct);
+            }
+
+            unitOfWork.Save();
         }
 
-        public List<CosmeticProduct> GetProducts(int id)
+        public List<CosmeticProduct> GetProducts(Bank bank)
         {
             List<CosmeticProduct> result = new List<CosmeticProduct>();
 
             List<int> toCompare = new List<int>();
 
-            foreach (var entry in context.BankProducts)
+            foreach (var entry in unitOfWork.db.BankProducts)
             {
-                if (entry.bankId == id)
+                if (entry.BankID == bank.ID)
                 {
-                    toCompare.Add(entry.productId);
+                    toCompare.Add(entry.CosmeticProductID);
                 }
             }
 
-            foreach (var product in context.CosmeticProducts)
+            foreach (var product in unitOfWork.db.CosmeticProducts)
             {
-                if (toCompare.Contains(product.id))
+                if (toCompare.Contains(product.ID))
                 {
                     result.Add(product);
                 }
@@ -43,27 +62,20 @@ namespace BeautySaloon.DataAccess
             return result;
         }
 
-        /* public bool Sell(CosmeticProduct entity, int id)
-        {
-            Interfaces.ICosmeticProductRepository repository = new CosmeticProductRepository();
-
-
-        } */
-
         public void Add(Bank entity)
         {
-            context.Banks.Add(entity);
+            unitOfWork.db.Banks.Add(entity);
         }
 
-        public void Delete(int id)
+        public void Delete(Bank entity)
         {
-            context.Banks.Remove(context.Banks.Find(id));
+            unitOfWork.db.Banks.Remove(unitOfWork.db.Banks.Find(entity.ID));
         }
 
         public List<Bank> GetAll()
         {
             List<Bank> result = new List<Bank>();
-            foreach (var bank in context.Banks)
+            foreach (var bank in unitOfWork.db.Banks)
             {
                 result.Add(bank);
             }
@@ -72,12 +84,25 @@ namespace BeautySaloon.DataAccess
 
         public Bank GetById(int id)
         {
-            return context.Banks.Find(id);
+            return unitOfWork.db.Banks.Find(id);
         }
 
         public void Update(Entities.Bank entity)
         {
-            context.Banks.Find(entity.id).id = entity.id;
+            unitOfWork.db.Banks.Find(entity.ID).ID = entity.ID;
+
+            foreach (var product in entity.Storage)
+            {
+                foreach (var relation in unitOfWork.db.BankProducts)
+                {
+                    if (relation.CosmeticProduct.Name == product.CosmeticProduct.Name && relation.BankID == entity.ID)
+                    {
+                        relation.Quantity = product.Quantity;
+                    }
+                }
+                unitOfWork.CosmeticProducts.Update(product.CosmeticProduct);
+            }
+            unitOfWork.Save();
         }
     }
 }

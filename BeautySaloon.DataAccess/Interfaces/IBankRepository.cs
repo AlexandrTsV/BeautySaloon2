@@ -4,10 +4,10 @@ using System.Text;
 
 namespace BeautySaloon.DataAccess.Interfaces
 {
-    public interface IBankRepository : IRepository<Entities.Bank>
+    public interface IBankRepository : IRepository<int, Entities.Bank>
     {
         // public bool Sell(Entities.CosmeticProduct entitiy, int id);
-        public void AddProduct(Entities.CosmeticProduct entity, int id);
-        public List<Entities.CosmeticProduct> GetProducts(int id);
+        public void AddProduct(Entities.CosmeticProduct entity, Entities.Bank bank);
+        public List<Entities.CosmeticProduct> GetProducts(Entities.Bank bank);
     }
 }

@@ -6,6 +6,7 @@ namespace BeautySaloon.Entities
 {
     public class Bank
     {
-        public int id { get; set; }
+        public int ID { get; set; }
+        public virtual ICollection<BankProduct> Storage { get; set; }
     }
 }

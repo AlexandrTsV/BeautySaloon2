@@ -1,71 +1,79 @@
 ﻿using BeautySaloon.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BeautySaloon.DataAccess
 {
-    public class CosmeticProductRepository : Interfaces.IRepository<CosmeticProduct>, Interfaces.ICosmeticProductRepository
+    public class CosmeticProductRepository : Interfaces.ICosmeticProductRepository
     {
-        public BeautySaloonDbContext context { get; set; }
-        public CosmeticProductRepository()
+        public UnitOfWork unitOfWork { get; set; }
+        public CosmeticProductRepository(UnitOfWork uow)
         {
-            context = new BeautySaloonDbContext();
+            unitOfWork = uow;
         }
         public void Add(CosmeticProduct entity)
         {
-            context.CosmeticProducts.Add(entity);
-            context.SaveChanges();
+            unitOfWork.db.CosmeticProducts.Add(entity);
+            unitOfWork.Save();
         }
 
-        public void Delete(int id)
+        public void Delete(CosmeticProduct entity)
         {
-            context.CosmeticProducts.Remove(context.CosmeticProducts.Find(id));
+            unitOfWork.db.CosmeticProducts.Remove(unitOfWork.db.CosmeticProducts.Find(entity.ID));
 
-            foreach (var entry in context.SaloonProducts)
+            foreach (var entry in unitOfWork.db.SaloonProducts)
             {
-                if (entry.productId == id)
+                if (entry.CosmeticProductID == entity.ID)
                 {
-                    context.SaloonProducts.Remove(entry);
+                    unitOfWork.db.SaloonProducts.Remove(entry);
                 }
             }
-            foreach (var entry in context.BankProducts)
+            foreach (var entry in unitOfWork.db.BankProducts)
             {
-                if (entry.productId == id)
+                if (entry.CosmeticProductID == entity.ID)
                 {
-                    context.BankProducts.Remove(entry);
+                    unitOfWork.db.BankProducts.Remove(entry);
                 }
             }
 
-            context.SaveChanges();
+            unitOfWork.Save();
         }
 
         public List<CosmeticProduct> GetAll()
         {
             List<CosmeticProduct> result = new List<CosmeticProduct>();
-            foreach (var cosmeticProduct in context.CosmeticProducts)
+            var query = from c in unitOfWork.db.CosmeticProducts select c;
+
+            foreach(var product in query)
             {
-                result.Add(cosmeticProduct);
+                result.Add(product);
             }
+
             return result;
         }
 
         public CosmeticProduct GetById(int id)
         {
-            return context.CosmeticProducts.Find(id);
+            return unitOfWork.db.CosmeticProducts.Find(id);
         }
 
         public void Update(CosmeticProduct entity)
         {
-            var tmp = context.CosmeticProducts.Find(entity.id);
-            tmp.id = entity.id;
-            tmp.name = entity.name;
-            tmp.price = entity.price;
-            // tmp.productionTime = entity.productionTime;
-            tmp.quantity = entity.quantity;
-            tmp.type = entity.type;
+            foreach (var tmp in unitOfWork.db.CosmeticProducts) {
+                if (tmp.ID == entity.ID)
+                {
+                    tmp.Name = entity.Name;
+                    tmp.Price = entity.Price;
+                    tmp.ProductionTime = entity.ProductionTime;
+                    tmp.MinimalQuantity = entity.MinimalQuantity;
+                    tmp.ProductTypeID = entity.ProductTypeID;
+                    tmp.StorageTime = entity.StorageTime;
+                }
+            }
 
-            context.SaveChanges();
+            unitOfWork.Save();
         }
     }
 }

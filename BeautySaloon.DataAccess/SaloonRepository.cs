@@ -5,24 +5,30 @@ using System.Text;
 
 namespace BeautySaloon.DataAccess
 {
-    public class SaloonRepository : Interfaces.IRepository<Saloon>, Interfaces.ISaloonRepository
+    public class SaloonRepository : Interfaces.ISaloonRepository
     {
-        public BeautySaloonDbContext context { get; set; }
-        public SaloonRepository()
+        public UnitOfWork unitOfWork { get; set; }
+        public SaloonRepository(UnitOfWork uow)
         {
-            context = new BeautySaloonDbContext();
+            unitOfWork = uow;
         }
-        public void AddProduct(CosmeticProduct entity, int id)
+        public void AddProduct(CosmeticProduct entity, Entities.Saloon saloon)
         {
-            Interfaces.ICosmeticProductRepository cosmeticProductRepository = new CosmeticProductRepository();
-
             int status = 0;
-            foreach (var product in cosmeticProductRepository.GetAll())
+            foreach (var product in GetProducts(saloon))
             {
-                if (product.id == entity.id)
+                if (product.Name == entity.Name)
                 {
-                    entity.quantity += product.quantity;
-                    cosmeticProductRepository.Update(entity);
+                    foreach (var relation in unitOfWork.db.SaloonProducts)
+                    {
+                        if (relation.CosmeticProduct.Name == product.Name && relation.SaloonID == entity.ID)
+                        {
+                            // TODO
+                            //relation.Quantity = product.Quantity;
+                        }
+                    }
+                    entity.ID = product.ID;
+                    unitOfWork.CosmeticProducts.Update(entity);
 
                     status = 1;
                 }
@@ -30,52 +36,39 @@ namespace BeautySaloon.DataAccess
 
             if (status == 0)
             {
-                cosmeticProductRepository.Add(entity);
-                SaloonProduct saloonProduct = new SaloonProduct() { productId = entity.id, saloonId = id };
-                context.SaloonProducts.Add(saloonProduct);
+                unitOfWork.CosmeticProducts.Add(entity);
+                SaloonProduct saloonProduct = new SaloonProduct() { CosmeticProductID = entity.ID, SaloonID = saloon.ID };
+                unitOfWork.db.SaloonProducts.Add(saloonProduct);
             }
 
-            context.SaveChanges();
+            unitOfWork.Save();
         }
 
-        public List<CosmeticProduct> GetProducts(int id)
+        public List<CosmeticProduct> GetProducts(Saloon saloon)
         {
             List<CosmeticProduct> result = new List<CosmeticProduct>();
 
-            List<int> toCompare = new List<int>();
-
-            foreach (var entry in context.SaloonProducts)
+            foreach (var entry in saloon.Storage)
             {
-                if (entry.saloonId == id)
-                {
-                    toCompare.Add(entry.productId);
-                }
-            }
-
-            foreach (var product in context.CosmeticProducts)
-            {
-                if (toCompare.Contains(product.id))
-                {
-                    result.Add(product);
-                }
+                result.Add(entry.CosmeticProduct);
             }
 
             return result;
         }
         public void Add(Saloon entity)
         {
-            context.Saloons.Add(entity);
+            unitOfWork.db.Saloons.Add(entity);
         }
 
-        public void Delete(int id)
+        public void Delete(Saloon entity)
         {
-            context.Saloons.Remove(context.Saloons.Find(id));
+            unitOfWork.db.Saloons.Remove(unitOfWork.db.Saloons.Find(entity.ID));
         }
 
         public List<Saloon> GetAll()
         {
             List<Saloon> result = new List<Saloon>();
-            foreach (var saloon in context.Saloons)
+            foreach (var saloon in unitOfWork.db.Saloons)
             {
                 result.Add(saloon);
             }
@@ -84,12 +77,38 @@ namespace BeautySaloon.DataAccess
 
         public Saloon GetById(int id)
         {
-            return context.Saloons.Find(id);
+            return unitOfWork.db.Saloons.Find(id);
         }
 
         public void Update(Saloon entity)
         {
-            context.Saloons.Find(entity.id).id = entity.id;
+            unitOfWork.db.Saloons.Find(entity.ID).ID = entity.ID;
+
+            foreach (var product in entity.Storage)
+            {
+                int status = 0;
+                foreach (var relation in unitOfWork.db.SaloonProducts)
+                {
+                    if (relation.CosmeticProduct.Name == product.CosmeticProduct.Name && relation.SaloonID == entity.ID)
+                    {
+                        relation.Quantity = product.Quantity;
+                        status = 1;
+                    }
+                }
+                if (status == 0)
+                {
+                    unitOfWork.db.SaloonProducts.Add(new Entities.SaloonProduct { 
+                        CosmeticProductID = product.CosmeticProductID,
+                        SaloonID = product.SaloonID,
+                        Quantity = product.Quantity
+                    });
+                    unitOfWork.Save();
+                }
+                else
+                {
+                    unitOfWork.CosmeticProducts.Update(product.CosmeticProduct);
+                }
+            }
         }
     }
 }

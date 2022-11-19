@@ -6,22 +6,21 @@ using System.Threading.Tasks;
 
 namespace BeautySaloon.BusinessLogic
 {
-    /*
     public class BankService : Interfaces.IBankService
     {
         DataAccess.Interfaces.IBankRepository repository { get; set; }
         Mappers.BankMapper mapper { get; set; }
 
-        public BankService()
+        public BankService(DataAccess.Interfaces.IBankRepository rep)
         {
-            repository = new DataAccess.BankRepository();
+            repository = rep;
             mapper = new Mappers.BankMapper();
         }
 
-        public void AddProduct(CosmeticProduct product, int id)
+        public void AddProduct(CosmeticProduct product, Bank bank)
         {
             Mappers.CosmeticProductMapper tmpMapper = new Mappers.CosmeticProductMapper();
-            repository.AddProduct(tmpMapper.ModelToEntity(product), id);
+            repository.AddProduct(tmpMapper.ModelToEntity(product), mapper.ModelToEntity(bank));
         }
 
         public void Create(Bank bank)
@@ -29,33 +28,32 @@ namespace BeautySaloon.BusinessLogic
             repository.Add(mapper.ModelToEntity(bank));
         }
 
-        public void Delete(int id)
+        public void Delete(Bank bank)
         {
-            repository.Delete(id);
+            repository.Delete(mapper.ModelToEntity(bank));
         }
 
-        public List<CosmeticProduct> ExecuteOrder(List<CosmeticProduct> products, int id)
+        public List<CosmeticProduct> ExecuteOrder(List<CosmeticProduct> products, Bank bank)
         {
             List<CosmeticProduct> result = new List<CosmeticProduct>();
-            Interfaces.ICosmeticProductService cosmeticProductService = new CosmeticProductService();
 
             foreach (var product in products)
             {
-                foreach (var inner in GetById(id).storage)
+                foreach (var inner in bank.storage)
                 {
-                    if (product.name == inner.name)
+                    if (product.Name == inner.Name)
                     {
-                        if (product.quantity < inner.quantity)
+                        if (product.Quantity < inner.Quantity)
                         {
-                            inner.quantity -= product.quantity;
-                            product.productionTime = inner.productionTime;
-                            cosmeticProductService.Update(inner);
+                            inner.Quantity -= product.Quantity;
+                            product.ProductionTime = inner.ProductionTime;
+                            repository.Update(mapper.ModelToEntity(bank));
                             result.Add(product);
                         }
                     }
                 }
             }
-            return result;
+            return result; 
         }
 
         public List<Bank> GetBanks()
@@ -77,5 +75,24 @@ namespace BeautySaloon.BusinessLogic
         {
             repository.Update(mapper.ModelToEntity(bank));
         }
-    } */
+
+        public CosmeticProduct Sell(CosmeticProduct cosmeticProduct, int quantity, Bank bank)
+        {
+            foreach (var product in bank.storage)
+            {
+                if (cosmeticProduct.Name == product.Name)
+                {
+                    if (quantity < product.Quantity)
+                    {
+                        cosmeticProduct.Quantity = quantity;
+                        product.Quantity -= quantity;
+                        cosmeticProduct.ProductionTime = product.ProductionTime;
+                        repository.Update(mapper.ModelToEntity(bank));
+                        return cosmeticProduct;
+                    }
+                }
+            }
+            return null;
+        }
+    } 
 }

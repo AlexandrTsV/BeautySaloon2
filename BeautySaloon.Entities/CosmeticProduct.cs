@@ -6,17 +6,18 @@ namespace BeautySaloon.Entities
 {
     public class CosmeticProduct
     {
-        public CosmeticProduct()
-        {
-            productionTime = DateTime.Now;
-        }
-        public int id { get; set; }
-        public string name { get; set; }
-        public double price { get; set; }
-        public int quantity { get; set; }
-        public string type { get; set; }
-
-        public TimeSpan deliveryTime { get; set; }
-        public DateTime productionTime { get; set; }
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public TimeSpan DeliveryTime { get; set; }
+        public DateTime ProductionTime { get; set; }
+        public int MinimalQuantity { get; set; }
+#nullable enable
+        public TimeSpan? StorageTime { get; set; }
+#nullable disable
+        public int ProductTypeID { get; set; }
+        public virtual ProductType Type { get; set; }
+        public int ServiceID { get; set; }
+        public virtual Service Service { get; set; }
     }
 }

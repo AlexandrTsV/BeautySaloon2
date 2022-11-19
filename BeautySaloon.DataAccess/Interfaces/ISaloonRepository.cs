@@ -4,9 +4,9 @@ using System.Text;
 
 namespace BeautySaloon.DataAccess.Interfaces
 {
-    public interface ISaloonRepository : IRepository<Entities.Saloon>
+    public interface ISaloonRepository : IRepository<int, Entities.Saloon>
     {
-        public void AddProduct(Entities.CosmeticProduct entity, int id);
-        public List<Entities.CosmeticProduct> GetProducts(int id);
+        public void AddProduct(Entities.CosmeticProduct entity, Entities.Saloon saloon);
+        public List<Entities.CosmeticProduct> GetProducts(Entities.Saloon saloon);
     }
 }

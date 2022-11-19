@@ -4,9 +4,9 @@ using System.Text;
 
 namespace BeautySaloon.Entities
 {
-    public class Saloon
+    public class Service
     {
         public int ID { get; set; }
-        public virtual ICollection<SaloonProduct> Storage { get; set; }
+        public string Name { get; set; }
     }
 }

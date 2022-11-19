@@ -3,17 +3,20 @@ using System.Collections.Generic;
 
 namespace BeautySaloon.Commands
 {
+    public class Queue
+    {
+        public Models.CosmeticProduct product;
+        public DateTime created;
+    }
     public class Commands
     {
+        private BusinessLogic.Interfaces.IBankService bankService;
+        private BusinessLogic.Interfaces.ICosmeticProductService cosmeticProductService;
+        private BusinessLogic.Interfaces.ISaloonService saloonService;
 
-        private Mappers.BankMapper bankMapper = new Mappers.BankMapper();
-        private Mappers.CosmeticProductMapper cosmeticProductMapper = new Mappers.CosmeticProductMapper();
-        private Mappers.SaloonMapper saloonMapper = new Mappers.SaloonMapper();
+        private DataAccess.UnitOfWork unitOfWork = new DataAccess.UnitOfWork();
 
-
-        private DataAccess.BankRepository bankRepository = new DataAccess.BankRepository();
-        private DataAccess.CosmeticProductRepository cosmeticProductRepository = new DataAccess.CosmeticProductRepository();
-        private DataAccess.SaloonRepository saloonRepository = new DataAccess.SaloonRepository();
+        private List<Queue> queue;
 
         // private BusinessLogic.Interfaces.IBankService bankService;
         // private BusinessLogic.Interfaces.ICosmeticProductService cosmeticProductService;
@@ -21,105 +24,136 @@ namespace BeautySaloon.Commands
 
         private int saloonId = 1;
         private int bankId = 1;
+        public Commands()
+        {
+            unitOfWork.db = new DataAccess.BeautySaloonDbContext();
+            unitOfWork.CosmeticProducts = new DataAccess.CosmeticProductRepository(unitOfWork);
+            unitOfWork.Banks = new DataAccess.BankRepository(unitOfWork);
+            unitOfWork.Saloons = new DataAccess.SaloonRepository(unitOfWork);
+
+            bankService = new BusinessLogic.BankService(unitOfWork.Banks);
+            cosmeticProductService = new BusinessLogic.CosmeticProductService(unitOfWork.CosmeticProducts);
+            saloonService = new BusinessLogic.SaloonService(unitOfWork.Saloons);
+
+            queue = new List<Queue>();
+        }
+
+        public void CheckQueue() {
+            foreach (var product in queue.ToArray())
+            {
+                if ((product.created + product.product.DeliveryTime) < DateTime.Now)
+                {
+                    queue.Remove(product);
+                    saloonService.AddProduct(product.product, saloonService.GetById(saloonId));
+                }
+            }
+        }
 
         public List<Models.CosmeticProduct> GetAllProducts()
         {
-            List<Models.CosmeticProduct> result = new List<Models.CosmeticProduct>();
-            foreach (var product in saloonMapper.EntityToModel(saloonRepository.GetById(saloonId)).storage)
+            CheckQueue();
+            return saloonService.GetProductsBySaloon(saloonService.GetById(saloonId));
+        }
+
+        public void AddProduct(Models.CosmeticProduct cosmeticProduct, TimeSpan storageTime)
+        {
+            Models.CosmeticProduct res = new Models.CosmeticProduct();
+
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
             {
-                result.Add(product);
+                Type type = asm.GetType("BeautySaloon.Models." + cosmeticProduct.Type.ToString());
+                if (type != null)
+                    res = (Models.CosmeticProduct)Activator.CreateInstance(type);
             }
-            return result;
+
+            cosmeticProduct.Quantity = 100;
+            cosmeticProduct.ProductionTime = DateTime.Now;
+
+            res.id = cosmeticProduct.id;
+            res.MinimalQuantity = cosmeticProduct.MinimalQuantity;
+            res.Name = cosmeticProduct.Name;
+            res.Price = cosmeticProduct.Price;
+            res.ProductionTime = cosmeticProduct.ProductionTime;
+            res.Quantity = cosmeticProduct.Quantity;
+            res.ServiceType = cosmeticProduct.ServiceType;
+            res.Type = cosmeticProduct.Type;
+            res.DeliveryTime = cosmeticProduct.DeliveryTime;
+
+            if (res is Models.IExpiration)
+            {
+                ((Models.IExpiration)res).StorageTime = storageTime;
+            }
+            bankService.AddProduct(res, bankService.GetById(bankId));
         }
 
         public void OrderProduct(Models.CosmeticProduct cosmeticProduct, int quantity)
         {
-            foreach (var product in saloonMapper.EntityToModel(saloonRepository.GetById(saloonId)).storage)
-            {
-                if (cosmeticProduct.name == product.name)
-                {
-                    var tmpProduct = product.Construct();
-                    tmpProduct.quantity = quantity;
-
-                    foreach (var inner in bankMapper.EntityToModel(bankRepository.GetById(bankId)).storage)
-                    {
-                        if (tmpProduct.name == inner.name)
-                        {
-                            if (tmpProduct.quantity < inner.quantity)
-                            {
-                                inner.quantity -= quantity;
-                                tmpProduct.productionTime = inner.productionTime;
-                                cosmeticProductRepository.Update(cosmeticProductMapper.ModelToEntity(inner));
-
-                                saloonRepository.AddProduct(cosmeticProductMapper.ModelToEntity(tmpProduct), saloonId);
-                            }
-                        }
-                    }
-
-                }
-            }
+            queue.Add(new Queue { product = bankService.Sell(cosmeticProduct, quantity, bankService.GetById(bankId)), created = DateTime.Now });
         }
 
         public void OrderNeeded()
         {
-            foreach (var product in saloonMapper.EntityToModel(saloonRepository.GetById(saloonId)).storage)
+            foreach (var product in bankService.ExecuteOrder(saloonService.FormOrder(saloonService.GetById(saloonId)), bankService.GetById(bankId)))
             {
-                if (product.IsNeeded() > 0)
-                {
-                    var tmpProduct = product.Construct();
-                    tmpProduct.quantity = product.IsNeeded();
-                    if (typeof(Models.IExpiration).IsAssignableFrom(product.GetType()))
-                    {
-                        if (((Models.IExpiration)product).IsExpired())
-                        {
-                            cosmeticProductRepository.Delete(product.id);
-                        }
-                    }
-
-                    foreach (var inner in bankMapper.EntityToModel(bankRepository.GetById(bankId)).storage)
-                    {
-                        if (tmpProduct.name == inner.name)
-                        {
-                            if (tmpProduct.quantity < inner.quantity)
-                            {
-                                inner.quantity -= tmpProduct.quantity;
-                                tmpProduct.productionTime = inner.productionTime;
-                                cosmeticProductRepository.Update(cosmeticProductMapper.ModelToEntity(inner));
-
-                                saloonRepository.AddProduct(cosmeticProductMapper.ModelToEntity(tmpProduct), saloonId);
-                            }
-                        }
-                    }
-
-                }
+                queue.Add(new Queue { product = product, created = DateTime.Now });
             }
         }
 
+        public List<Models.Services> GetServices()
+        {
+            return cosmeticProductService.GetServices();
+        }
+
+        public List<Models.ProductTypes> GetTypes()
+        {
+            return cosmeticProductService.GetTypes();
+        }
+
+        public List<Models.CosmeticProduct> GetByService(string name)
+        {
+            CheckQueue();
+            return saloonService.GetProductsByService(saloonService.GetById(saloonId), (Models.Services)Enum.Parse(typeof(Models.Services), name));
+        }
         public List<Models.CosmeticProduct> GetBankProducts()
         {
-            List<Models.CosmeticProduct> result = new List<Models.CosmeticProduct>();
-            foreach (var product in bankMapper.EntityToModel(bankRepository.GetById(bankId)).storage)
-            {
-                result.Add(product);
-            }
-            return result;
+            return cosmeticProductService.GetByBank(bankService.GetById(bankId));
         }
         public List<Models.CosmeticProduct> GetNeededProducts()
         {
-            List<Models.CosmeticProduct> result = new List<Models.CosmeticProduct>();
-            foreach (var product in saloonMapper.EntityToModel(saloonRepository.GetById(saloonId)).storage)
-            {
-                if (product.IsNeeded() > 0) result.Add(product);
-            }
-            return result;
+            return saloonService.GetAllNeededProducts(saloonService.GetById(saloonId));
         }
-
-        
-        public Commands()
+        public void UpdateProduct(Models.CosmeticProduct cosmeticProduct, TimeSpan storageTime)
         {
-            // bankService = new BusinessLogic.BankService();
-            // cosmeticProductService = new BusinessLogic.CosmeticProductService();
-            // saloonService = new BusinessLogic.SaloonService();
+            Models.CosmeticProduct res = new Models.CosmeticProduct();
+
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type type = asm.GetType("BeautySaloon.Models." + cosmeticProduct.Type.ToString());
+                if (type != null)
+                    res = (Models.CosmeticProduct)Activator.CreateInstance(type);
+            }
+
+            cosmeticProduct.Quantity = 100;
+            cosmeticProduct.DeliveryTime = TimeSpan.FromSeconds(1);
+            cosmeticProduct.ProductionTime = DateTime.Now;
+
+            res.id = cosmeticProduct.id;
+            res.MinimalQuantity = cosmeticProduct.MinimalQuantity;
+            res.Name = cosmeticProduct.Name;
+            res.Price = cosmeticProduct.Price;
+            res.ProductionTime = cosmeticProduct.ProductionTime;
+            res.Quantity = cosmeticProduct.Quantity;
+            res.ServiceType = cosmeticProduct.ServiceType;
+            res.Type = cosmeticProduct.Type;
+            res.DeliveryTime = cosmeticProduct.DeliveryTime;
+
+            if (res is Models.IExpiration)
+            {
+                ((Models.IExpiration)res).StorageTime = storageTime;
+            }
+
+            cosmeticProductService.Update(res);
+            saloonService.UpdateStorage(res, saloonService.GetById(saloonId));
         }
     }
 }

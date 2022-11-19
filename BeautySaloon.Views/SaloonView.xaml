@@ -14,6 +14,11 @@
 
         <DockPanel>
             <Label DockPanel.Dock="Top" Content="Storage"/>
+            <ComboBox DockPanel.Dock="Top" ItemsSource="{Binding Services}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Name"
+                      SelectedIndex="0"
+                      SelectedItem="{Binding SelectedService}"/>
             <ListBox ItemsSource="{Binding Saloon}"/>
         </DockPanel>
 

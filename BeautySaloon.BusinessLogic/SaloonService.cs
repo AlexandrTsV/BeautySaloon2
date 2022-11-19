@@ -5,30 +5,42 @@ using System.Text;
 
 namespace BeautySaloon.BusinessLogic
 {
-    /*
     public class SaloonService : Interfaces.ISaloonService
     {
         DataAccess.Interfaces.ISaloonRepository repository { get; set; }
         Mappers.SaloonMapper mapper { get; set; }
 
-        public SaloonService()
+        public SaloonService(DataAccess.Interfaces.ISaloonRepository rep)
         {
-            repository = new DataAccess.SaloonRepository();
+            repository = rep;
             mapper = new Mappers.SaloonMapper();
         }
-        public void AddProduct(CosmeticProduct product, int id)
+        public void AddProduct(CosmeticProduct product, Saloon saloon)
         {
             Mappers.CosmeticProductMapper tmpMapper = new Mappers.CosmeticProductMapper();
-            repository.AddProduct(tmpMapper.ModelToEntity(product), id);
+            int status = 0;
+            foreach (var inner in saloon.storage) {
+                if (inner.Name == product.Name)
+                {
+                    inner.Quantity += product.Quantity;
+                    status = 1;
+                }
+            }
+            if (status == 0)
+            {
+                saloon.storage.Add(product);
+            }
+            
+            repository.Update(mapper.ModelToEntity(saloon));
         }
         public void Create(Saloon saloon)
         {
             repository.Add(mapper.ModelToEntity(saloon));
         }
 
-        public void Delete(int id)
+        public void Delete(Saloon saloon)
         {
-            repository.Delete(id);
+            repository.Delete(mapper.ModelToEntity(saloon));
         }
 
         public List<Saloon> GetSaloons()
@@ -52,13 +64,38 @@ namespace BeautySaloon.BusinessLogic
         }
 
 
-        public List<CosmeticProduct> GetAllNeededProducts(int id)
+        public List<CosmeticProduct> GetAllNeededProducts(Saloon saloon)
         {
 
             List<CosmeticProduct> products = new List<CosmeticProduct>();
-            foreach (var product in GetById(id).storage)
+            foreach (var product in saloon.storage)
             {
-                if (product.IsNeeded() > 0)
+                if (product.Quantity < product.MinimalQuantity)
+                {
+                    products.Add(product);
+                }
+                else if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
+                {
+                    if (product.ProductionTime + ((IExpiration)product).StorageTime < DateTime.Now)
+                    {
+                        products.Add(product);
+                    }
+                }
+            }
+            return products;
+        }
+
+        public List<Models.CosmeticProduct> GetProductsBySaloon(Models.Saloon saloon)
+        {
+            repository.Update(mapper.ModelToEntity(saloon));
+            return mapper.EntityToModel(repository.GetById(saloon.id)).storage;
+        }
+        public List<Models.CosmeticProduct> GetProductsByService(Models.Saloon saloon, Models.Services service)
+        {
+            List<CosmeticProduct> products = new List<CosmeticProduct>();
+            foreach (var product in saloon.storage)
+            {
+                if (product.ServiceType == service)
                 {
                     products.Add(product);
                 }
@@ -66,27 +103,49 @@ namespace BeautySaloon.BusinessLogic
             return products;
         }
 
-        public List<CosmeticProduct> FormOrder(int id)
+        public List<CosmeticProduct> FormOrder(Saloon saloon)
         {
-
             List<CosmeticProduct> products = new List<CosmeticProduct>();
-            foreach (var product in GetById(id).storage)
+            foreach (var product in saloon.storage)
             {
-                if (product.IsNeeded() > 0)
+                if (product.Quantity < product.MinimalQuantity)
                 {
-                    var tmpProduct = product.Construct();
-                    tmpProduct.quantity = product.IsNeeded();
-                    if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
-                    {
-                        if (((IExpiration)product).IsExpired())
-                        {
-                            (new CosmeticProductService()).Delete(product.id);
-                        }
-                    }
+                    var tmpProduct = new CosmeticProduct(product);
+                    tmpProduct.Quantity = product.MinimalQuantity - product.Quantity;
                     products.Add(tmpProduct);
+                }
+                else if (typeof(IExpiration).IsAssignableFrom(product.GetType()))
+                {
+                    if (product.ProductionTime + ((IExpiration)product).StorageTime < DateTime.Now)
+                    {
+                        var tmpProduct = new CosmeticProduct(product);
+                        tmpProduct.Quantity = product.MinimalQuantity;
+                        product.Quantity = 0;
+                        repository.Update(mapper.ModelToEntity(saloon));
+                        products.Add(tmpProduct);
+                    }
                 }
             }
             return products;
         }
-    } */
+
+        public void UpdateStorage(CosmeticProduct product, Saloon saloon)
+        {
+            int status = 0;
+            foreach (var inner in saloon.storage)
+            {
+                if (inner.Name == product.Name)
+                {
+                    inner.Type = product.Type;
+                    status = 1;
+                }
+            }
+            if (status == 0)
+            {
+                saloon.storage.Add(product);
+            }
+
+            repository.Update(mapper.ModelToEntity(saloon));
+        }
+    }
 }

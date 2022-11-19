@@ -10,6 +10,7 @@
         <DataTemplate DataType="{x:Type local:CosmeticProductVM}">
             <StackPanel Orientation="Horizontal">
                 <!-- <Button Visibility="{Binding IsBuyVisible}" Command="{Binding BuyCommand}" Margin="5">+</Button> -->
+                <Button Content="Exp"  Command="{Binding ToExpired}"/>
                 <Label Content="{Binding Name}"/>
                 <Label Content="{Binding Type}"/>
                 <Label Content="{Binding Quantity}"/>

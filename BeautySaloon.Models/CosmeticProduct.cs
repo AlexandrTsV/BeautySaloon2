@@ -4,31 +4,47 @@ using System.Text;
 
 namespace BeautySaloon.Models
 {
+    public enum ProductTypes
+    {
+        CosmeticProduct = 1,
+        CosmeticProductExpiration,
+        CosmeticProductLongTerm
+    }
+
+    public enum Services
+    {
+        Face = 1,
+        Body,
+        Hair,
+        Lips
+    }
+
     public class CosmeticProduct
     {
         public int id { get; set; }
-        public string name { get; set; }
-        public double price { get; set; }
-        public int quantity { get; set; }
-        public string type { get; set; }
-        public TimeSpan deliveryTime { get; set; }
-        public DateTime productionTime { get; set; }
-        public string Name { get { return name; } }
-        public double Price { get { return price; } }
-        public string Type { get { return type; } }
-        public int Quantity { get { return quantity; } }
-        virtual public int IsNeeded()
-        {
-            return 0;
-        }
-        virtual public CosmeticProduct Construct()
-        {
-            return this;
-        }
+        public TimeSpan DeliveryTime { get; set; }
+        public DateTime ProductionTime { get; set; }
+        public int MinimalQuantity { get; set; }
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public ProductTypes Type { get; set; }
+        public Services ServiceType { get; set; }
+        public int Quantity { get; set; }
 
-        public string GetProductType()
+        public CosmeticProduct()
         {
-            return type;
+
+        }
+        public CosmeticProduct(CosmeticProduct cosmeticProduct)
+        {
+            DeliveryTime      = cosmeticProduct.DeliveryTime   ;
+            ProductionTime    = cosmeticProduct.ProductionTime ;
+            MinimalQuantity   = cosmeticProduct.MinimalQuantity;
+            Name              = cosmeticProduct.Name           ;
+            Price             = cosmeticProduct.Price          ;
+            Type              = cosmeticProduct.Type           ;
+            ServiceType       = cosmeticProduct.ServiceType    ;
+            Quantity          = cosmeticProduct.Quantity       ;
         }
     }
 }
